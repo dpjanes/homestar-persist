@@ -109,7 +109,7 @@ var thing_metadata = function(request, response, locals) {
             updated['iot:zone'] = new_zones;
         }
 
-        if (!_.isEmpty(updated)) {
+        if (!_.is.Empty(updated)) {
             thing.meta().update(updated, { set_timestamp: true });
             _.extend(metadata, updated);
         }
