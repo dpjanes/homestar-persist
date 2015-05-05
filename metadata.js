@@ -78,7 +78,7 @@ _zones1.map(function(zone) {
     });
 });
 
-var thing_metadata = function(request, response, locals) {
+var thing_metadata = function(request, response, locals, done) {
     /* XXX check the user's permissions to edit metadata */
     
     locals.thing_id = request.params.thing_id;
@@ -115,7 +115,7 @@ var thing_metadata = function(request, response, locals) {
         }
 
         response.redirect("/things#" + locals.thing_id);
-        return true;
+        return done(null, true);
     }
 
     var metadata_facets = _.ld.list(metadata, 'iot:facet', []);
@@ -139,6 +139,8 @@ var thing_metadata = function(request, response, locals) {
     locals.metadata = metadata;
     locals.metadata_facets = metadata_facets;
     locals.metadata_zones = metadata_zones;
+
+    return done(null);
 };
 
 /**
