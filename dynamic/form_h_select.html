@@ -9,9 +9,9 @@
             class="form-control">
             {% for choice in d.choices %}
                 {% if d.multiple %}
-            <option value="{{ choice.value }}"{% if choice.selected %} selected{% endif %}>{{ choice.key }}</option>
+            <option value="{{ choice.value }}"{% if choice.selected %} selected{% endif %}>{{ choice.name }}</option>
                 {% else %}
-            <option value="{{ choice.value }}"{% if d.value === choice.value %} selected{% endif %}>{{ choice.key }}</option>
+            <option value="{{ choice.value }}"{% if d.value === choice.value %} selected{% endif %}>{{ choice.name }}</option>
                 {% endif %}
             {% endfor %}
         </select>
