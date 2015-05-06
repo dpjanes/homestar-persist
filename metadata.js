@@ -47,9 +47,13 @@ var _map_facet = function(facet) {
  *  Callback by 'make_dynamic' to do the work specific to this form
  */
 var thing_metadata = function(request, response, locals, done) {
-    /* XXX check the user's permissions to edit metadata */
+    if (!request.user || !request.user.is_owner) {
+        return done(new Error("Permission denied"));
+    }
 
-    var thing = index.homestar.things.thing_by_id(request.params.thing_id);
+    var homestar = index.homestar;
+
+    var thing = homestar.things.thing_by_id(request.params.thing_id);
     if (!thing) {
         return done(new Error("Thing not found"));
     }
@@ -57,10 +61,14 @@ var thing_metadata = function(request, response, locals, done) {
     locals.metadata = _.ld.compact(thing.meta().state());
     locals.metadata_facets = _.ld.list(locals.metadata, 'iot:facet', []);
     locals.metadata_zones = _.ld.list(locals.metadata, 'iot:zone', []);
-    
+    locals.metadata_access_read = _.ld.list(locals.metadata, 'iot:access.read', homestar.data.default_access_read());
+    locals.metadata_access_write = _.ld.list(locals.metadata, 'iot:access.write', homestar.data.default_access_write());
+
     locals.thing_id = request.params.thing_id;
-    locals.zones = _.map(index.homestar.data.zones(), _map_zone, locals.metadata_zones);
-    locals.facets = _.map(index.homestar.data.facets(), _map_facet, locals.metadata_facets);
+    locals.zones = _.map(homestar.data.zones(), _map_zone, locals.metadata_zones);
+    locals.facets = _.map(homestar.data.facets(), _map_facet, locals.metadata_facets);
+    locals.access_read = _.map(homestar.data.groups(), _map_facet, locals.metadata_access_read);
+    locals.access_write = _.map(homestar.data.groups(), _map_facet, locals.metadata_access_write);
 
     if (request.method === "POST") {
         var updated = {};
@@ -70,16 +78,24 @@ var thing_metadata = function(request, response, locals, done) {
             updated['schema:name'] = name;
         }
 
-        var old_facets = _.ld.list(locals.metadata, 'iot:facet', []);
         var new_facets = _.ld.list(request.body, 'iot:facet', []);
-        if (!_.equals(old_facets, new_facets)) {
+        if (!_.equals(locals.metadata_facets, new_facets)) {
             updated['iot:facet'] = new_facets;
         }
 
-        var old_zones = _.ld.list(locals.metadata, 'iot:zone', []);
         var new_zones = _.ld.list(request.body, 'iot:zone', []);
-        if (!_.equals(old_zones, new_zones)) {
+        if (!_.equals(locals.metadata_zones, new_zones)) {
             updated['iot:zone'] = new_zones;
+        }
+
+        var new_access_read = _.ld.list(request.body, 'iot:access.read', []);
+        if (!_.equals(locals.metadata_access_read, new_access_read)) {
+            updated['iot:access.read'] = new_access_read;
+        }
+
+        var new_access_write = _.ld.list(request.body, 'iot:access.write', []);
+        if (!_.equals(locals.metadata_access_write, new_access_write)) {
+            updated['iot:access.write'] = new_access_write;
         }
 
         if (!_.is.Empty(updated)) {
