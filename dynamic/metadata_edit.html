@@ -23,10 +23,10 @@ fieldset[disabled] .select2-search input[type=text] {
     <h1>Metadata</h1>
     <p>
     </p>
-    {#
     <p>
     {{ thing_id }}
     </p>
+    {#
     #}
     
 <form 
@@ -47,11 +47,12 @@ fieldset[disabled] .select2-search input[type=text] {
     - e.g. by name, by function ("facets"), or by where it is ("zones").
     </p>
 
-{{ form_h_input({ key: "_iot_thing", value: metadata['iot:thing'], label: "Thing ID", errors: null, readonly: true }) }}
+{{ form_h_input({ key: "_iot_thing", value: thing_id, label: "Thing ID", errors: null, readonly: true }) }}
 {{ form_h_input({ key: "schema:name", value: metadata['schema:name'], label: "Name", errors: null }) }}
 {{ form_h_select({ key: "iot:facet", value: metadata_facets, multiple: true, label: "Facets", choices: facets, errors: null }) }}
 {{ form_h_select({ key: "iot:zone", value: metadata_zones, multiple: true, label: "Zones", choices: zones, errors: null }) }}
 
+{#
     <h3>Access Control</h3>
     <p>
     These fields control who can view and change this Thing.
@@ -59,6 +60,7 @@ fieldset[disabled] .select2-search input[type=text] {
 
 {{ form_h_select({ key: "iot:access.read", value: metadata_access_read, multiple: true, label: "View", choices: access_read, errors: null }) }}
 {{ form_h_select({ key: "iot:access.write", value: metadata_access_write, multiple: true, label: "Control", choices: access_write, errors: null }) }}
+#}
 
 <!-- Button -->
 <div class="form-group">

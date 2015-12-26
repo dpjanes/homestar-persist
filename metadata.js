@@ -88,6 +88,7 @@ var thing_metadata = function(request, response, locals, done) {
             updated['iot:zone'] = new_zones;
         }
 
+        /*
         var new_access_read = _.ld.list(request.body, 'iot:access.read', []);
         if (!_.equals(locals.metadata_access_read, new_access_read)) {
             updated['iot:access.read'] = new_access_read;
@@ -97,6 +98,7 @@ var thing_metadata = function(request, response, locals, done) {
         if (!_.equals(locals.metadata_access_write, new_access_write)) {
             updated['iot:access.write'] = new_access_write;
         }
+        */
 
         if (!_.is.Empty(updated)) {
             thing.meta().update(updated, { set_timestamp: true });
