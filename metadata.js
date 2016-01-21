@@ -25,8 +25,6 @@
 var iotdb = require('iotdb');
 var _ = iotdb._;
 
-var index = require('./index');
-
 var _map_zone = function(zone) {
     return {
         value: zone,
@@ -51,9 +49,7 @@ var thing_metadata = function(request, response, locals, done) {
         return done(new Error("Permission denied"));
     }
 
-    var homestar = index.homestar;
-
-    var thing = homestar.things.thing_by_id(request.params.thing_id);
+    var thing = locals.homestar.things.thing_by_id(request.params.thing_id);
     if (!thing) {
         return done(new Error("Thing not found"));
     }
@@ -61,14 +57,14 @@ var thing_metadata = function(request, response, locals, done) {
     locals.metadata = _.ld.compact(thing.meta().state());
     locals.metadata_facets = _.ld.list(locals.metadata, 'iot:facet', []);
     locals.metadata_zones = _.ld.list(locals.metadata, 'iot:zone', []);
-    locals.metadata_access_read = _.ld.list(locals.metadata, 'iot:access.read', homestar.data.default_access_read());
-    locals.metadata_access_write = _.ld.list(locals.metadata, 'iot:access.write', homestar.data.default_access_write());
+    locals.metadata_access_read = _.ld.list(locals.metadata, 'iot:access.read', locals.homestar.data.default_access_read());
+    locals.metadata_access_write = _.ld.list(locals.metadata, 'iot:access.write', locals.homestar.data.default_access_write());
 
     locals.thing_id = request.params.thing_id;
-    locals.zones = _.map(homestar.data.zones(), _map_zone, locals.metadata_zones);
-    locals.facets = _.map(homestar.data.facets(), _map_facet, locals.metadata_facets);
-    locals.access_read = _.map(homestar.data.groups(), _map_facet, locals.metadata_access_read);
-    locals.access_write = _.map(homestar.data.groups(), _map_facet, locals.metadata_access_write);
+    locals.zones = _.map(locals.homestar.data.zones(), _map_zone, locals.metadata_zones);
+    locals.facets = _.map(locals.homestar.data.facets(), _map_facet, locals.metadata_facets);
+    locals.access_read = _.map(locals.homestar.data.groups(), _map_facet, locals.metadata_access_read);
+    locals.access_write = _.map(locals.homestar.data.groups(), _map_facet, locals.metadata_access_write);
 
     if (request.method === "POST") {
         var updated = {};

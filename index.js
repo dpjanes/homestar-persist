@@ -26,21 +26,17 @@ var path = require('path');
 
 var metadata = require("./metadata");
 
-exports.homestar = null;
-exports.web = {
-    setup: function(app, homestar) {
-        exports.homestar = homestar;
+exports.homestar = {
+    setup_app: function(locals, app) {
+        locals.metadata_editor = true;
 
-        app.get("/admin/things/:thing_id/meta", homestar.make_dynamic({
+        app.get("/admin/things/:thing_id/meta", locals.homestar.make_dynamic({
             template: path.join(__dirname, "dynamic/metadata_edit.html"),
             customize: metadata.thing_metadata,
         }));
-        app.post("/admin/things/:thing_id/meta", homestar.make_dynamic({
+        app.post("/admin/things/:thing_id/meta", locals.homestar.make_dynamic({
             template: path.join(__dirname, "dynamic/metadata_edit.html"),
             customize: metadata.thing_metadata,
         }));
-    },
-    locals: {
-        metadata_editor: true
     },
 }
