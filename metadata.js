@@ -75,23 +75,23 @@ var thing_metadata = function(request, response, locals, done) {
         }
 
         var new_facets = _.ld.list(request.body, 'iot:facet', []);
-        if (!_.equals(locals.metadata_facets, new_facets)) {
+        if (!_.is.Equal(locals.metadata_facets, new_facets)) {
             updated['iot:facet'] = new_facets;
         }
 
         var new_zones = _.ld.list(request.body, 'iot:zone', []);
-        if (!_.equals(locals.metadata_zones, new_zones)) {
+        if (!_.is.Equal(locals.metadata_zones, new_zones)) {
             updated['iot:zone'] = new_zones;
         }
 
         /*
         var new_access_read = _.ld.list(request.body, 'iot:access.read', []);
-        if (!_.equals(locals.metadata_access_read, new_access_read)) {
+        if (!_.is.Equal(locals.metadata_access_read, new_access_read)) {
             updated['iot:access.read'] = new_access_read;
         }
 
         var new_access_write = _.ld.list(request.body, 'iot:access.write', []);
-        if (!_.equals(locals.metadata_access_write, new_access_write)) {
+        if (!_.is.Equal(locals.metadata_access_write, new_access_write)) {
             updated['iot:access.write'] = new_access_write;
         }
         */
