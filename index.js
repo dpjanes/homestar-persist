@@ -22,9 +22,9 @@
 
 "use strict";
 
-var path = require('path');
+const path = require('path');
 
-var metadata = require("./metadata");
+const metadata = require("./metadata");
 
 exports.homestar = {
     setup_app: function(locals, app) {

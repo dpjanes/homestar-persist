@@ -22,82 +22,66 @@
 
 "use strict";
 
-var iotdb = require('iotdb');
-var _ = iotdb._;
-
-var _map_zone = function(zone) {
-    return {
-        value: zone,
-        name: zone,
-        selected: this.indexOf(zone) > -1,
-    }
-};
-
-var _map_facet = function(facet) {
-    return {
-        value: facet,
-        name: facet.replace(/^.*:/, ":"),
-        selected: this.indexOf(facet) > -1,
-    }
-};
+const iotdb = require('iotdb');
+const _ = iotdb._;
 
 /**
  *  Callback by 'make_dynamic' to do the work specific to this form
  */
-var thing_metadata = function(request, response, locals, done) {
+const thing_metadata = function(request, response, locals, done) {
     if (!request.user || !request.user.is_owner) {
         return done(new Error("Permission denied"));
     }
 
-    var thing = locals.homestar.things.thing_by_id(request.params.thing_id);
+    const thing = locals.homestar.things.thing_by_id(request.params.thing_id);
     if (!thing) {
         return done(new Error("Thing not found"));
     }
 
-    locals.metadata = _.ld.compact(thing.meta().state());
+    locals.metadata = thing.state("meta");
     locals.metadata_facets = _.ld.list(locals.metadata, 'iot:facet', []);
     locals.metadata_zones = _.ld.list(locals.metadata, 'iot:zone', []);
     locals.metadata_access_read = _.ld.list(locals.metadata, 'iot:access.read', locals.homestar.data.default_access_read());
     locals.metadata_access_write = _.ld.list(locals.metadata, 'iot:access.write', locals.homestar.data.default_access_write());
 
+    const _process_zone = zone => ({
+        value: zone,
+        name: zone,
+        selected: locals.metadata_zones.indexOf(zone) > -1,
+    });
+
+    const _process_facet = facet => ({
+        value: facet,
+        name: facet.replace(/^.*:/, ":"),
+        selected: locals.metadata_facets.indexOf(facet) > -1,
+    });
+
     locals.thing_id = request.params.thing_id;
-    locals.zones = _.map(locals.homestar.data.zones(), _map_zone, locals.metadata_zones);
-    locals.facets = _.map(locals.homestar.data.facets(), _map_facet, locals.metadata_facets);
-    locals.access_read = _.map(locals.homestar.data.groups(), _map_facet, locals.metadata_access_read);
-    locals.access_write = _.map(locals.homestar.data.groups(), _map_facet, locals.metadata_access_write);
+    locals.zones = _.map(locals.homestar.data.zones(), _process_zone);
+    locals.facets = _.map(locals.homestar.data.facets(), _process_facet);
+    locals.access_read = _.map(locals.homestar.data.groups(), _process_facet);
+    locals.access_write = _.map(locals.homestar.data.groups(), _process_facet);
 
     if (request.method === "POST") {
-        var updated = {};
+        const updated = {};
 
-        var name = request.body['schema:name']
-        if (name && name.length && name != locals.metadata['schema:name']) {
+        const name = request.body['schema:name']
+        if (name && name.length && name !== locals.metadata['schema:name']) {
             updated['schema:name'] = name;
         }
 
-        var new_facets = _.ld.list(request.body, 'iot:facet', []);
+        const new_facets = _.ld.list(request.body, 'iot:facet', []);
         if (!_.is.Equal(locals.metadata_facets, new_facets)) {
             updated['iot:facet'] = new_facets;
         }
 
-        var new_zones = _.ld.list(request.body, 'iot:zone', []);
+        const new_zones = _.ld.list(request.body, 'iot:zone', []);
         if (!_.is.Equal(locals.metadata_zones, new_zones)) {
             updated['iot:zone'] = new_zones;
         }
 
-        /*
-        var new_access_read = _.ld.list(request.body, 'iot:access.read', []);
-        if (!_.is.Equal(locals.metadata_access_read, new_access_read)) {
-            updated['iot:access.read'] = new_access_read;
-        }
-
-        var new_access_write = _.ld.list(request.body, 'iot:access.write', []);
-        if (!_.is.Equal(locals.metadata_access_write, new_access_write)) {
-            updated['iot:access.write'] = new_access_write;
-        }
-        */
-
         if (!_.is.Empty(updated)) {
-            thing.meta().update(updated, { set_timestamp: true });
+            thing.update("meta", updated)
             _.extend(locals.metadata, updated);
         }
 
