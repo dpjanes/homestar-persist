@@ -25,7 +25,11 @@
 const path = require('path');
 
 const metadata = require("./metadata");
+const store = require("./store");
 
+/*
+ *  For homestar
+ */
 exports.homestar = {
     setup_app: function(locals, app) {
         locals.metadata_editor = true;
@@ -40,5 +44,13 @@ exports.homestar = {
         }));
     },
 }
+
+
+/**
+ *  For iotdb.use()
+ */
+exports.use = () => {
+    store.setup();
+};
 
 exports.module_folder = __dirname;

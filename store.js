@@ -36,12 +36,12 @@ const setup = () => {
 
     // the store
     const fs_transporter = iotdb_transport_fs.make({
-        prefix: "./.iotdb/things"
+        prefix: ".iotdb/things"
     });
 
     // copy live data to the store
     fs_transporter.monitor(iotdb_transporter, {
-        check_read: d => [ "meta", "model", "connection" ].indexOf(d.band) > -1 ? null : new Error("denied"),
+        // check_read: d => [ "meta", "model", "connection", "istate", "ostate" ].indexOf(d.band) > -1 ? null : new Error("denied"),
     });
 
     // copy change from the store to live
