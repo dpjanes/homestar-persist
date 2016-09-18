@@ -25,29 +25,34 @@
 const iotdb = require('iotdb');
 const _ = iotdb._;
 
-const iotdb_transport = require("iotdb-transport");
 const iotdb_transport_iotdb = require("iotdb-transport-iotdb");
-const iotdb_transport_fs = require("iotdb-transport-fs");
+
+const _check = bands => d => bands.indexOf(d.band) === -1 ? new Error("denied") : null;
 
 const setup = () => {
     // the live data
     const things = iotdb.things();
     const iotdb_transporter = iotdb_transport_iotdb.make({}, things);
 
-    // the store
-    const fs_transporter = iotdb_transport_fs.make({
-        prefix: ".iotdb/things"
-    });
+    require(".")
+        .configuration()
+        .forEach(cfgd => {
+            // out store
+            const out_transporter = require(cfgd.transporter).make(cfgd.initd);
 
-    // copy live data to the store
-    fs_transporter.monitor(iotdb_transporter, {
-        // check_read: d => [ "meta", "model", "connection", "istate", "ostate" ].indexOf(d.band) > -1 ? null : new Error("denied"),
-    });
+            // copy live data to the out store
+            out_transporter.monitor(iotdb_transporter, {
+                check_source: _check(cfgd.out_bands),
+                check_destination: _check(cfgd.in_bands),
+            });
 
-    // copy change from the store to live
-    iotdb_transporter.monitor(fs_transporter, {
-        check_read: d => [ "meta" ].indexOf(d.band) > -1 ? null : new Error("denied"),
-    });
+            // copy change from the out store to live
+            iotdb_transporter.monitor(out_transporter, {
+                check_source: d => _check(cfgd.in_bands),
+                check_destination: d => _check(cfgd.in_bands),
+            });
+        })
+
 };
 
 /**

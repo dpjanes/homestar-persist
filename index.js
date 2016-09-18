@@ -26,6 +26,7 @@ const path = require('path');
 
 const metadata = require("./metadata");
 const store = require("./store");
+const cfg = require("./cfg");
 
 /*
  *  For homestar
@@ -52,5 +53,7 @@ exports.homestar = {
 exports.use = () => {
     store.setup();
 };
+
+exports.configuration = cfg.configuration;
 
 exports.module_folder = __dirname;
