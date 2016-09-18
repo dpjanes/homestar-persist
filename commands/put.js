@@ -25,7 +25,7 @@
 const iotdb = require('iotdb');
 const _ = iotdb._;
 
-const iotdb_transport_fs = require('iotdb-transport-fs');
+const configuration = require("..").configuration;
 
 exports.command = "put";
 exports.summary = "edit a thing (known by homestar-metadata)";
@@ -72,9 +72,8 @@ exports.run = ad => {
         process.exit()
     }
 
-    const fs_transporter = iotdb_transport_fs.make({
-        prefix: ".iotdb/things"
-    });
+    const cfgd = _.first(configuration());
+    const out_transporter = require(cfgd.transporter).make(cfgd.initd);
 
     console.log("HERE")
 

@@ -25,7 +25,7 @@
 const iotdb = require('iotdb');
 const _ = iotdb._;
 
-const iotdb_transport_fs = require('iotdb-transport-fs');
+const configuration = require("..").configuration;
 
 exports.command = "things";
 exports.summary = "list things (known by homestar-metadata)";
@@ -45,14 +45,13 @@ const _explain = (band, d) =>
         .map(itemd => itemd.values.map(value => `${ band }/${ itemd.key } ${ value }`)), true)
 
 exports.run = ad => {
-    const fs_transporter = iotdb_transport_fs.make({
-        prefix: ".iotdb/things"
-    });
+    const cfgd = _.first(configuration());
+    const out_transporter = require(cfgd.transporter).make(cfgd.initd);
 
-    fs_transporter.list()
+    out_transporter.list()
         .subscribe(
             ld => {
-                fs_transporter.one({
+                out_transporter.one({
                     id: ld.id,
                 })
                     .subscribe(
