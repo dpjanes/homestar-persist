@@ -102,6 +102,9 @@ exports.run = ad => {
     } else if (ad.name) {
         selector_key = "meta/schema:name";
         selector_value = ad.name;
+    } else if (ad.id) {
+        selector_key = "id";
+        selector_value = ad.id;
     } else if (ad.select) {
         const d = _split(ad.select);
         selector_key = d.key;

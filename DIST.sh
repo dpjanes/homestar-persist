@@ -6,7 +6,7 @@
 #   2015-02-10
 #
 
-PACKAGE=homestar-metadata
+PACKAGE=homestar-persist
 DIST_ROOT=/var/tmp/.dist.$$
 
 if [ ! -d "$DIST_ROOT" ]

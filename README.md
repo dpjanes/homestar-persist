@@ -5,9 +5,10 @@
 
 # About
 
-This will persist (write to disk) all the data belonging to your Things.
-It will also allow modification of that data, which will be written back to the 
-Things, e.g. to modify metadata or the state
+* This will persist (write to disk) all the data belonging to your Things.
+* It will also allow modification of that data, which will be written back to the 
+Things, e.g. to modify metadata or the state.
+* It provides CLI tools to modify state
 
 ## Files
 
@@ -18,7 +19,7 @@ it's worth looking at what it's actually storing.
 
 * [Read this first](https://github.com/dpjanes/node-iotdb/blob/master/docs/install.md)
 
-If you want to use the CLI tools (you probably do), also install HomeStar:
+If you want to use the CLI tools (you probably do), also install Home☆Star:
 
 * [Read about installing Home☆Star](https://github.com/dpjanes/node-iotdb/blob/master/docs/homestar.md) 
 
@@ -42,10 +43,10 @@ That's it! If you look in `.iotdb/things` you'll see
 all the Things that IOTDB discovers listed here, one
 folder per `id` and then one JSON file per **band**.
 
-## In HomeStar
+## In Home☆Star
 
 Just add the following to `boot/index.js` after you've
-set up HomeStar:
+set up Home☆Star:
 
     iotdb.use("homestar-persist");
 
@@ -81,7 +82,7 @@ Turn off everything
 
     $ homestar put --all :on 0
 
-XXX
+Turn on Things that are made by Belkin.
 
-    $ homestar put --select meta/schema:manufacturer=http://www.belkin.com/
+    $ homestar put --select meta/schema:manufacturer=http://www.belkin.com/ :on 1
 
