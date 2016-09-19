@@ -188,17 +188,6 @@ exports.run = ad => {
                 .catch(error => {
                     console.log("#", "error", thing.thing_id(), _.error.message(error));
                 })
-            
-            // console.log(bandd);
-            // console.log(_.d.get(bandd, selector_key), "/", selector_value);
         });
-    /*
-    out_transporter.all()
-        .subscribe(
-            bandd => {
-                if (selector
-            }
-    */
-
 
 };
