@@ -30,11 +30,12 @@ echo "=================="
     update-package --increment-version --package "$PACKAGE" --homestar || exit 1
 
     tar cf - \
-        --exclude "node_modules" \
+        --exclude "node_modules" --exclude "Gruntfile.js" \
         README.md LICENSE \
         homestar.json package.json \
-        metadata.js index.js \
+        *.js \
         dynamic/*.* \
+        commands/*.js \
         |
     ( cd "${NPM_DST}" && tar xvf - && npm publish ) || exit 1
     git commit -m "new release" package.json || exit 1
