@@ -143,11 +143,11 @@ exports.run = ad => {
 
     let set_value = ad._[2];
     if (ad.boolean) {
-        set_value = _.coerce.boolean(set_value);
+        set_value = _.coerce.to.Boolean(set_value);
     } else if (ad.integer) {
-        set_value = _.coerce.integer(set_value);
+        set_value = _.coerce.to.Integer(set_value);
     } else if (ad.number) {
-        set_value = _.coerce.number(set_value);
+        set_value = _.coerce.to.Number(set_value);
     }
 
     const cfgd = _.first(configuration());
@@ -165,10 +165,13 @@ exports.run = ad => {
                         return;
                     }
 
+                    const value = thing.state(set_band);
+                    value["@timestamp"] = _.timestamp.make();
+
                     out_transporter.put({
                         id: thing.thing_id(),
                         band: set_band,
-                        value: thing.state(set_band)
+                        value: value,
                     })
                         .subscribe(
                             ok => {
