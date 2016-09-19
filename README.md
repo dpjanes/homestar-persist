@@ -80,3 +80,8 @@ Rename the Thing with id 'urn:iotdb:t:sArvozfc:092qoWwd'
 Turn off everything
 
     $ homestar put --all :on 0
+
+XXX
+
+    $ homestar put --select meta/schema:manufacturer=http://www.belkin.com/
+
