@@ -25,6 +25,8 @@
 const iotdb = require('iotdb');
 const _ = iotdb._;
 
+const iotdb_transport_iotdb = require('iotdb-transport-iotdb');
+
 /**
  *  Callback by 'make_dynamic' to do the work specific to this form
  */
@@ -33,16 +35,25 @@ const thing_metadata = function(request, response, locals, done) {
         return done(new Error("Permission denied"));
     }
 
-    const thing = locals.homestar.things.thing_by_id(request.params.thing_id);
-    if (!thing) {
-        return done(new Error("Thing not found"));
-    }
+    iotdb_transporter = iotdb_transport_iotdb.make({});
+    iotdb_transport.one({
+        id: request.params.thing_id,
+    }, 
+        bandd => {
+            const thing = iotdb_thing.make(bandd);
+
+            locals.thing_id = request.params.thing_id;
+            locals.zones = _.map(locals.homestar.data.zones(), _process_zone);
+            locals.facets = _.map(locals.homestar.data.facets(), _process_facet);
+        },
+        error => {
+            return done(new Error("Thing not found"));
+        }
+    )
 
     locals.metadata = thing.state("meta");
     locals.metadata_facets = _.ld.list(locals.metadata, 'iot:facet', []);
     locals.metadata_zones = _.ld.list(locals.metadata, 'iot:zone', []);
-    locals.metadata_access_read = _.ld.list(locals.metadata, 'iot:access.read', locals.homestar.data.default_access_read());
-    locals.metadata_access_write = _.ld.list(locals.metadata, 'iot:access.write', locals.homestar.data.default_access_write());
 
     const _process_zone = zone => ({
         value: zone,
@@ -56,12 +67,8 @@ const thing_metadata = function(request, response, locals, done) {
         selected: locals.metadata_facets.indexOf(facet) > -1,
     });
 
-    locals.thing_id = request.params.thing_id;
-    locals.zones = _.map(locals.homestar.data.zones(), _process_zone);
-    locals.facets = _.map(locals.homestar.data.facets(), _process_facet);
-    locals.access_read = _.map(locals.homestar.data.groups(), _process_facet);
-    locals.access_write = _.map(locals.homestar.data.groups(), _process_facet);
 
+    /*
     if (request.method === "POST") {
         const updated = {};
 
@@ -88,6 +95,7 @@ const thing_metadata = function(request, response, locals, done) {
         response.redirect("/things#" + locals.thing_id);
         return done(null, true);
     }
+    */
 
     return done(null);
 };
