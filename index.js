@@ -24,28 +24,8 @@
 
 const path = require('path');
 
-const metadata = require("./metadata");
 const store = require("./store");
 const cfg = require("./cfg");
-
-/*
- *  For homestar
- */
-exports.homestar = {
-    setup_app: function(locals, app) {
-        locals.metadata_editor = true;
-
-        app.get("/admin/things/:thing_id/meta", locals.homestar.make_dynamic({
-            template: path.join(__dirname, "dynamic/metadata_edit.html"),
-            customize: metadata.thing_metadata,
-        }));
-        app.post("/admin/things/:thing_id/meta", locals.homestar.make_dynamic({
-            template: path.join(__dirname, "dynamic/metadata_edit.html"),
-            customize: metadata.thing_metadata,
-        }));
-    },
-}
-
 
 /**
  *  For iotdb.use()
