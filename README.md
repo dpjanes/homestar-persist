@@ -1,5 +1,5 @@
 # homestar-persist
-[IOTDB](https://github.com/dpjanes/node-iotdb) module to persist all Thing data to disk.
+[IOTDB](https://github.com/dpjanes/node-iotdb) module to persist Thing data to disk
 
 <img src="https://raw.githubusercontent.com/dpjanes/iotdb-homestar/master/docs/HomeStar.png" align="right" />
 

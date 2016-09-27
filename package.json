@@ -9,7 +9,7 @@
         "iotdb-transport-fs": "~3.0.4", 
         "iotdb-transport-iotdb": "~3.0.4"
     }, 
-    "description": "HomeStar Metadata Editor Plugin", 
+    "description": "IOTDB module to persist Thing data to disk",
     "devDependencies": {
         "grunt": "~1.0.1", 
         "grunt-contrib-jshint": "~1.0.0", 
