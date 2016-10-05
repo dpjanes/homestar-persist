@@ -34,6 +34,4 @@ exports.use = () => {
     store.setup();
 };
 
-exports.configuration = cfg.configuration;
-
 exports.module_folder = __dirname;

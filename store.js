@@ -25,34 +25,37 @@
 const iotdb = require('iotdb');
 const _ = iotdb._;
 
-const iotdb_transport_iotdb = require("iotdb-transport-iotdb");
+const logger = iotdb.logger({
+    name: 'homestar-persist',
+    module: 'store.js'
+});
 
 const _check = bands => d => bands.indexOf(d.band) === -1 ? new Error("denied") : null;
 
 const setup = () => {
-    // the live data
-    const things = iotdb.things();
-    const iotdb_transporter = iotdb_transport_iotdb.make({}, things);
+    const cfgd = iotdb_transport.find("metadata");
+    if (!cfgd) {
+        logger.warn({
+            method: "setup",
+            cause: "check .iotdb/keystore - there should be a default for this, so it's likely disabled there",
+        }, "no 'metadata' transport defined");
+        return
+    }
 
-    require(".")
-        .configuration()
-        .forEach(cfgd => {
-            // out store
-            const out_transporter = require(cfgd.transporter).make(cfgd.initd);
+    const iotdb_transporter = iotdb_transport.create("core");
+    const metadata_transporter = iotdb_transport.create("metadata");
 
-            // copy live data to the out store
-            out_transporter.monitor(iotdb_transporter, {
-                check_source: _check(cfgd.out_bands),
-                check_destination: _check(cfgd.in_bands),
-            });
+    // copy live data to the out store
+    metadata_transporter.monitor(iotdb_transporter, {
+        check_source: _check(cfgd.out_bands),
+        check_destination: _check(cfgd.in_bands),
+    });
 
-            // copy change from the out store to live
-            iotdb_transporter.monitor(out_transporter, {
-                check_source: d => _check(cfgd.in_bands),
-                check_destination: d => _check(cfgd.in_bands),
-            });
-        })
-
+    // copy change from the out store to live
+    iotdb_transporter.monitor(metadata_transporter, {
+        check_source: d => _check(cfgd.in_bands),
+        check_destination: d => _check(cfgd.in_bands),
+    });
 };
 
 /**
