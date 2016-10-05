@@ -5,11 +5,11 @@
     }, 
     "dependencies": {
         "iotdb": ">=3.0.0", 
-        "iotdb-transport": "~3.0.8", 
-        "iotdb-transport-fs": "~3.0.4", 
-        "iotdb-transport-iotdb": "~3.0.4"
+        "iotdb-transport": "~3.0.11", 
+        "iotdb-transport-fs": "~3.0.6", 
+        "iotdb-transport-iotdb": "~3.0.5"
     }, 
-    "description": "IOTDB module to persist Thing data to disk",
+    "description": "IOTDB module to persist Thing data to disk", 
     "devDependencies": {
         "grunt": "~1.0.1", 
         "grunt-contrib-jshint": "~1.0.0", 
@@ -34,5 +34,5 @@
     "scripts": {
         "test": "grunt"
     }, 
-    "version": "3.0.3"
+    "version": "3.0.4"
 }
