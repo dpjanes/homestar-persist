@@ -25,6 +25,8 @@
 const iotdb = require('iotdb');
 const _ = iotdb._;
 
+const iotdb_transport = require("iotdb-transport");
+
 const logger = iotdb.logger({
     name: 'homestar-persist',
     module: 'store.js'
@@ -33,26 +35,26 @@ const logger = iotdb.logger({
 const _check = bands => d => bands.indexOf(d.band) === -1 ? new Error("denied") : null;
 
 const setup = () => {
-    const cfgd = iotdb_transport.find("metadata");
+    const cfgd = iotdb_transport.find("persist");
     if (!cfgd) {
         logger.warn({
             method: "setup",
             cause: "check .iotdb/keystore - there should be a default for this, so it's likely disabled there",
-        }, "no 'metadata' transport defined");
+        }, "no 'persist' transport defined");
         return
     }
 
     const iotdb_transporter = iotdb_transport.create("core");
-    const metadata_transporter = iotdb_transport.create("metadata");
+    const persist_transporter = iotdb_transport.create("persist");
 
     // copy live data to the out store
-    metadata_transporter.monitor(iotdb_transporter, {
+    persist_transporter.monitor(iotdb_transporter, {
         check_source: _check(cfgd.out_bands),
         check_destination: _check(cfgd.in_bands),
     });
 
     // copy change from the out store to live
-    iotdb_transporter.monitor(metadata_transporter, {
+    iotdb_transporter.monitor(persist_transporter, {
         check_source: d => _check(cfgd.in_bands),
         check_destination: d => _check(cfgd.in_bands),
     });

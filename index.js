@@ -25,7 +25,6 @@
 const path = require('path');
 
 const store = require("./store");
-const cfg = require("./cfg");
 
 /**
  *  For iotdb.use()

@@ -26,8 +26,7 @@ const iotdb = require('iotdb');
 const _ = iotdb._;
 
 const iotdb_thing = require('iotdb-thing');
-
-const configuration = require("..").configuration;
+const iotdb_transport = require('iotdb-transport');
 
 exports.command = "put";
 exports.summary = "edit a thing (known by homestar-metadata)";
@@ -153,8 +152,7 @@ exports.run = ad => {
         set_value = _.coerce.to.Number(set_value);
     }
 
-    const cfgd = _.first(configuration());
-    const out_transporter = require(cfgd.transporter).make(cfgd.initd);
+    const out_transporter = iotdb_transport.create("persist");
 
     out_transporter.all()
         .filter(bandd => ad.all || (_.d.list(bandd, selector_key, []).indexOf(selector_value) > -1))

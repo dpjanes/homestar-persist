@@ -25,7 +25,7 @@
 const iotdb = require('iotdb');
 const _ = iotdb._;
 
-const configuration = require("..").configuration;
+const iotdb_transport = require('iotdb-transport');
 
 exports.command = "things";
 exports.summary = "list things (known by homestar-metadata)";
@@ -45,8 +45,7 @@ const _explain = (band, d) =>
         .map(itemd => itemd.values.map(value => `${ band }/${ itemd.key } ${ value }`)), true)
 
 exports.run = ad => {
-    const cfgd = _.first(configuration());
-    const out_transporter = require(cfgd.transporter).make(cfgd.initd);
+    const out_transporter = iotdb_transport.create("persist");
 
     out_transporter.list()
         .subscribe(
